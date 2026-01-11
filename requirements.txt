@@ -1,0 +1,11 @@
+Flask==2.0.2
+nltk==3.6.3
+scikit-learn==0.24.2
+langchain==0.0.150  
+langchain_community==0.0.1 
+langchain_openai==0.0.1 
+langchain_core==0.0.1 
+llama_index==0.0.1  
+pydantic==1.10.2  
+typing_extensions==4.3.0  
+dotenv==0.21.0  

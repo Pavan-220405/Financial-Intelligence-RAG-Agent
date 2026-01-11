@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MedAI Chatbot</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f0f0f0;
+        }
+        .navbar {
+            background-color: #007bff;
+            color: white;
+            padding: 1rem;
+            text-align: center;
+        }
+        .navbar h1 {
+            margin: 0;
+        }
+        #chat-container {
+            width: 60%; /* Increased width for larger screens */
+            height: 70vh; /* Increased height for more space */
+            max-width: 900px; /* Max width for large screens */
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            display: flex;
+            flex-direction: column;
+            background-color: white;
+            margin: 2rem auto;
+        }
+        #chat-messages {
+            flex-grow: 1;
+            overflow-y: auto;
+            padding: 10px;
+            display: flex;
+            flex-direction: column;
+            height: calc(100% - 50px); /* Dynamic height for responsive layout */
+        }
+        .message {
+            max-width: 80%;
+            padding: 10px;
+            margin: 10px;
+            border-radius: 10px;
+            word-wrap: break-word;
+        }
+        .user-message {
+            align-self: flex-end;
+            background-color: #007bff;
+            color: white;
+        }
+        .bot-message {
+            align-self: flex-start;
+            background-color: #f1f0f0;
+        }
+        #user-input {
+            display: flex;
+            padding: 10px;
+            border-top: 1px solid #ccc;
+        }
+        #user-input input {
+            flex-grow: 1;
+            padding: 10px; /* Larger padding for bigger input area */
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 16px; /* Slightly larger font */
+        }
+        #user-input button {
+            padding: 10px 15px; /* Larger button for better usability */
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            margin-left: 10px;
+            font-size: 16px; /* Consistent font size */
+            cursor: pointer;
+        }
+        #user-input button:hover {
+            background-color: #0056b3; /* Hover effect for better feedback */
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <h1>MedAI</h1>
+    </nav>
+    <div id="chat-container">
+        <div id="chat-messages"></div>
+        <div id="user-input">
+            <input type="text" id="user-message" placeholder="Type your message...">
+            <button onclick="sendMessage()">Send</button>
+        </div>
+    </div>
+
+    <script>
+        const chatMessages = document.getElementById('chat-messages');
+        const userMessageInput = document.getElementById('user-message');
+
+        function addMessage(message, isUser) {
+            const messageElement = document.createElement('div');
+            messageElement.classList.add('message');
+            messageElement.classList.add(isUser ? 'user-message' : 'bot-message');
+            messageElement.textContent = message;
+            chatMessages.appendChild(messageElement);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+
+        async function sendMessage() {
+            const message = userMessageInput.value.trim();
+            if (message) {
+                addMessage(message, true);
+                userMessageInput.value = '';
+
+                try {
+                    const response = await fetch('/chat', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({ message: message }),
+                    });
+                    const data = await response.json();
+                    addMessage(data.answer, false);
+                } catch (error) {
+                    console.error('Error:', error);
+                    addMessage("Sorry, I couldn't process your request.", false);
+                }
+            }
+        }
+
+        userMessageInput.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                sendMessage();
+            }
+        });
+
+        // Initial bot message
+        addMessage("Hello! I'm MedAI, ready to answer questions about the text. How can I help you today?", false);
+    </script>
+</body>
+</html>
